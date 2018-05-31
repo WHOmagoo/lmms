@@ -564,6 +564,7 @@ void Alg_smf_write::write(ofstream &file)
 
         // End of track event
         write_varinum(0);           // delta time
+        //TODO maybe edit this to merge tracks into one track
         out_file->put(0xFF);
         out_file->put(0x2F);
         out_file->put(0x00);

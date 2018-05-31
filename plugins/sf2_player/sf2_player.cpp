@@ -96,6 +96,7 @@ sf2Instrument::sf2Instrument( InstrumentTrack * _instrument_track ) :
 	m_channel( 1 ),
 	m_bankNum( 0, 0, 999, this, tr("Bank") ),
 	m_patchNum( 0, 0, 127, this, tr("Patch") ),
+    m_channelNum(16,1,16, this, tr("Channel")),
 	m_gain( 1.0f, 0.0f, 5.0f, 0.01f, this, tr( "Gain" ) ),
 	m_reverbOn( false, this, tr( "Reverb" ) ),
 	m_reverbRoomSize( FLUID_REVERB_DEFAULT_ROOMSIZE, 0, 1.0, 0.01f, this, tr( "Reverb Roomsize" ) ),
@@ -132,6 +133,7 @@ sf2Instrument::sf2Instrument( InstrumentTrack * _instrument_track ) :
 
 	connect( &m_bankNum, SIGNAL( dataChanged() ), this, SLOT( updatePatch() ) );
 	connect( &m_patchNum, SIGNAL( dataChanged() ), this, SLOT( updatePatch() ) );
+    connect( &m_channelNum, SIGNAL( dataChanged() ), this, SLOT(updatePatch() ) );
 
 	connect( Engine::mixer(), SIGNAL( sampleRateChanged() ), this, SLOT( updateSampleRate() ) );
 
@@ -180,6 +182,7 @@ void sf2Instrument::saveSettings( QDomDocument & _doc, QDomElement & _this )
 	_this.setAttribute( "src", m_filename );
 	m_patchNum.saveSettings( _doc, _this, "patch" );
 	m_bankNum.saveSettings( _doc, _this, "bank" );
+    m_channelNum.saveSettings( _doc, _this, "channel");
 
 	m_gain.saveSettings( _doc, _this, "gain" );
 
@@ -204,6 +207,7 @@ void sf2Instrument::loadSettings( const QDomElement & _this )
 	openFile( _this.attribute( "src" ), false );
 	m_patchNum.loadSettings( _this, "patch" );
 	m_bankNum.loadSettings( _this, "bank" );
+    m_channelNum.loadSettings( _this, "channel" );
 
 	m_gain.loadSettings( _this, "gain" );
 
@@ -251,7 +255,10 @@ AutomatableModel * sf2Instrument::childModel( const QString & _modelName )
 	else if( _modelName == "patch" )
 	{
 		return &m_patchNum;
-	}
+	} else if( _modelName == "channel")
+    {
+        return &m_channelNum;
+    }
 	qCritical() << "requested unknown model " << _modelName;
 	return NULL;
 }
@@ -371,8 +378,12 @@ void sf2Instrument::openFile( const QString & _sf2File, bool updateTrackName )
 
 void sf2Instrument::updatePatch()
 {
-	if( m_bankNum.value() >= 0 && m_patchNum.value() >= 0 )
+	if( m_bankNum.value() >= 0 && m_patchNum.value() >= 0 && m_channelNum.value() >= 0)
 	{
+		//TODO get this to set the patch number; maybe use channel here as well
+        InstrumentTrack *i = instrumentTrack();
+		i->setPatch(m_patchNum.value());
+		i->setChannel(m_channelNum.value() - 1);
 		fluid_synth_program_select( m_synth, m_channel, m_fontId,
 				m_bankNum.value(), m_patchNum.value() );
 	}
@@ -834,6 +845,7 @@ sf2InstrumentView::sf2InstrumentView( Instrument * _instrument, QWidget * _paren
 
 	connect( &k->m_bankNum, SIGNAL( dataChanged() ), this, SLOT( updatePatchName() ) );
 	connect( &k->m_patchNum, SIGNAL( dataChanged() ), this, SLOT( updatePatchName() ) );
+    connect( &k->m_channelNum, SIGNAL( dataChanged() ), this, SLOT(updatePatchName() ) );
 
 	// File Button
 	m_fileDialogButton = new PixmapButton( this );
@@ -869,6 +881,9 @@ sf2InstrumentView::sf2InstrumentView( Instrument * _instrument, QWidget * _paren
 
 	m_patchNumLcd = new LcdSpinBox( 3, "21pink", this );
 	m_patchNumLcd->move(190, 62);
+
+    m_channelNumLcd = new LcdSpinBox(3, "21pink", this);
+    m_channelNumLcd->move(0,62);
 //	m_patchNumLcd->addTextForValue( -1, "---" );
 //	m_patchNumLcd->setEnabled( false );
 
@@ -1000,6 +1015,7 @@ void sf2InstrumentView::modelChanged()
 	sf2Instrument * k = castModel<sf2Instrument>();
 	m_bankNumLcd->setModel( &k->m_bankNum );
 	m_patchNumLcd->setModel( &k->m_patchNum );
+    m_channelNumLcd->setModel(&k->m_channelNum);
 
 	m_gainKnob->setModel( &k->m_gain );
 

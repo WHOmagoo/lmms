@@ -41,6 +41,7 @@ struct MidiNote
 	uint8_t pitch;
 	int duration;
 	uint8_t volume;
+	uint8_t channel;
 
 	inline bool operator<(const MidiNote &b) const
 	{

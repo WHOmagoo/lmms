@@ -436,10 +436,12 @@ bool MidiImport::readSMF( TrackContainer* tc )
 				if( update == "programi" )
 				{
 					long prog = evt->get_integer_value();
+					long chan = evt->chan;
 					if( ch->isSF2 )
 					{
 						ch->it_inst->childModel( "bank" )->setValue( 0 );
 						ch->it_inst->childModel( "patch" )->setValue( prog );
+						ch->it_inst->childModel( "channel" )->setValue( chan + 1);
 					}
 					else {
 						const QString num = QString::number( prog );

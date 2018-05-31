@@ -254,6 +254,7 @@ class MIDITrack
 		start += writeEventsToBuffer(buffer, start);
 
 		// Write MIDI close event.
+        //TODO edit this so multiple LMMS tracks can be written to one midi track
 		buffer[start++] = 0x00;
 		buffer[start++] = 0xFF;
 		buffer[start++] = 0x2F;

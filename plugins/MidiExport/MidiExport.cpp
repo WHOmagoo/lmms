@@ -29,6 +29,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <iostream>
 
 #include "MidiExport.h"
 
@@ -93,24 +94,30 @@ bool MidiExport::tryExport(const TrackContainer::TrackList &tracks,
 	for (const Track* track : tracks_BB) if (track->type() == Track::InstrumentTrack) nTracks++;
 
 	// midi header
-	MidiFile::MIDIHeader header(nTracks);
+//	MidiFile::MIDIHeader header(nTracks);
+    MidiFile::MIDIHeader header(1);
 	size = header.writeToBuffer(buffer);
 	midiout.writeRawData((char *)buffer, size);
 
 	std::vector<std::vector<std::pair<int,int>>> plists;
 
 	// midi tracks
-	for (Track* track : tracks)
+	//TODO fix this to output midi channels
+	for (Track *track : tracks)
 	{
 		DataFile dataFile(DataFile::SongProject);
 		MTrack mtrack;
 
 		if (track->type() == Track::InstrumentTrack)
 		{
+			mtrack.channel = track->getChannel();
 
 			mtrack.addName(track->name().toStdString(), 0);
-			//mtrack.addProgramChange(0, 0);
-			mtrack.addTempo(tempo, 0);
+
+            //Add's program change
+			mtrack.addProgramChange(track->getPatch(), 0);
+
+            mtrack.addTempo(tempo, 0);
 
 			instTrack = dynamic_cast<InstrumentTrack *>(track);
 			element = instTrack->saveState(dataFile, dataFile.content());

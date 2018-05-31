@@ -217,7 +217,7 @@ opl2instrument::opl2instrument( InstrumentTrack * _instrument_track ) :
 }
 
 opl2instrument::~opl2instrument() {
-	delete theEmulator;
+    delete theEmulator;
 	Engine::mixer()->removePlayHandlesOfTypes( instrumentTrack(),
 				PlayHandle::TypeNotePlayHandle
 				| PlayHandle::TypeInstrumentPlayHandle );

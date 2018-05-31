@@ -566,6 +566,22 @@ public:
 		m_height = height;
 	}
 
+	inline void setPatch(uint8_t i){
+		m_patch = i;
+	}
+
+	inline uint8_t getPatch(){
+		return m_patch;
+	}
+
+    inline void setChannel(uint8_t c){
+        m_channel = c;
+    }
+
+    inline uint8_t getChannel(){
+        return m_channel;
+    }
+
 	void lock()
 	{
 		m_processingLock.lock();
@@ -596,6 +612,8 @@ private:
 	TrackTypes m_type;
 	QString m_name;
 	int m_height;
+	uint8_t m_patch;
+    uint8_t m_channel;
 
 protected:
 	BoolModel m_mutedModel;

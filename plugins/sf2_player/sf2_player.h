@@ -53,6 +53,7 @@ class sf2Instrument : public Instrument
 	Q_OBJECT
 	mapPropertyFromModel(int,getBank,setBank,m_bankNum);
 	mapPropertyFromModel(int,getPatch,setPatch,m_patchNum);
+    mapPropertyFromModel(int,getChannel,setChannel,m_channelNum);
 
 public:
 	sf2Instrument( InstrumentTrack * _instrument_track );
@@ -136,6 +137,7 @@ private:
 
 	LcdSpinBoxModel m_bankNum;
 	LcdSpinBoxModel m_patchNum;
+    LcdSpinBoxModel m_channelNum;
 
 	FloatModel m_gain;
 
@@ -203,6 +205,7 @@ private:
 
 	LcdSpinBox * m_bankNumLcd;
 	LcdSpinBox * m_patchNumLcd;
+	LcdSpinBox * m_channelNumLcd;
 
 	QLabel * m_filenameLabel;
 	QLabel * m_patchLabel;

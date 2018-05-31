@@ -108,7 +108,6 @@ private:
 
 	TrackContainerTypes m_TrackContainerType;
 
-
 	friend class TrackContainerView;
 	friend class Track;
 
